@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MATEM-Precálculo · Círculo trigonométrico con GeoGebra</title>
+<style>
+:root{--vino:#9b1c31;--gris:#f4f5f7;--b:#d8dce2;--txt:#25282c}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--txt);font-size:18px;line-height:1.4}header{background:var(--vino);color:#fff;padding:18px 22px}header h1{font-size:1.35rem;margin:0}header p{margin:.25rem 0 0}main{max-width:1180px;margin:auto;padding:18px;display:grid;grid-template-columns:1fr 340px;gap:18px}.card{border:1px solid var(--b);border-radius:12px;padding:15px;background:#fff}h2{font-size:1.05rem;color:var(--vino);margin:.2rem 0 .8rem}.ggb{min-height:600px;background:var(--gris);display:flex;align-items:center;justify-content:center;border-radius:8px}.row{display:grid;grid-template-columns:1fr 80px;gap:8px;align-items:center}input[type=range]{width:100%}.num{font-weight:700;text-align:right;color:var(--vino)}.metrics{background:var(--gris);border-radius:8px;padding:10px;margin:12px 0}.metrics div{margin:.3rem 0}.prompt{background:#fff8e6;border-left:5px solid #b37b00;padding:10px;border-radius:8px}.questions li{margin:.5rem 0}textarea{width:100%;min-height:95px;font-size:1rem;padding:8px;border:1px solid #aaa;border-radius:7px}button{width:100%;padding:10px;margin-top:8px;border:0;border-radius:8px;background:var(--vino);color:white;font-weight:700;font-size:1rem;cursor:pointer}.hidden{display:none}.answer{background:#edf7ef;padding:10px;border-radius:8px;margin-top:10px}footer{max-width:1180px;margin:auto;padding:0 18px 20px;color:#666;font-size:.82rem}@media(max-width:900px){main{grid-template-columns:1fr}.ggb{min-height:520px}}
+</style>
+<script src="https://www.geogebra.org/apps/deployggb.js"></script>
+</head>
+<body>
+<header><h1>Círculo trigonométrico dinámico · GeoGebra</h1><p>Modelo C para MATEM-Precálculo 2026 · requiere conexión para cargar GeoGebra Web</p></header>
+<main>
+<section class="card"><div id="ggb-element" class="ggb">Cargando GeoGebra…</div></section>
+<aside class="card">
+<h2>1. Controle el ángulo</h2>
+<div class="row"><input id="angle" type="range" min="0" max="360" step="1" value="30"><div id="deg" class="num">30°</div></div>
+<div class="metrics"><div>Radianes: <strong id="rad">π/6</strong></div><div>cos(α): <strong id="cosv">0.866</strong></div><div>sin(α): <strong id="sinv">0.500</strong></div><div>Cuadrante: <strong id="quad">I</strong></div></div>
+<div class="prompt"><strong>Primero prediga.</strong> Mueva el control, elija un ángulo y explique qué signos espera para seno y coseno antes de mirar los valores.</div>
+<h2>2. Consignas</h2><ol class="questions"><li>Encuentre dos ángulos distintos con el mismo seno positivo.</li><li>Localice un ángulo del III cuadrante y explique por qué seno y coseno son negativos.</li><li>Para sin(α)=1/2 en [0°,360°), prediga todas las soluciones y después verifíquelas.</li></ol>
+<textarea id="pred" placeholder="Escriba una predicción o explicación breve..."></textarea><button id="check">Mostrar verificación del ejemplo sin(α)=1/2</button><div id="ans" class="answer hidden">Las soluciones en [0°,360°) son 30° y 150°: el seno es positivo en los cuadrantes I y II y el ángulo de referencia es 30°.</div>
+<h2>3. Pruebas del tutor</h2><div class="small">Revise 0°, 30°, 90°, 150°, 225° y 330°. La conversión a radianes, los signos y las coordenadas deben coincidir.</div>
+</aside>
+</main>
+<footer>La construcción usa un punto P=(cos(α), sin(α)) sobre el círculo unitario. La interfaz externa controla α y GeoGebra sirve como registro gráfico para contrastar la predicción del estudiante.</footer>
+<script>
+let api=null;
+function fracRad(d){const g=(a,b)=>b?g(b,a%b):Math.abs(a); if(d===0)return '0'; if(d===360)return '2π'; const n=d,den=180,gg=g(n,den),nn=n/gg,dd=den/gg; if(dd===1)return nn===1?'π':`${nn}π`; return nn===1?`π/${dd}`:`${nn}π/${dd}`}
+function quad(d){d=((d%360)+360)%360;if(d===0||d===90||d===180||d===270)return 'cuadrantal';if(d<90)return 'I';if(d<180)return 'II';if(d<270)return 'III';return 'IV'}
+function update(){const d=parseFloat(document.getElementById('angle').value),r=d*Math.PI/180;document.getElementById('deg').textContent=d+'°';document.getElementById('rad').textContent=fracRad(d);document.getElementById('cosv').textContent=Math.cos(r).toFixed(3);document.getElementById('sinv').textContent=Math.sin(r).toFixed(3);document.getElementById('quad').textContent=quad(d);if(api){api.setValue('a',r);api.evalCommand('P=(cos(a),sin(a))');api.evalCommand('C=(x(P),0)');api.evalCommand('S=(0,y(P))');}}
+const params={appName:'classic',width:760,height:600,showToolBar:false,showAlgebraInput:false,showMenuBar:false,language:'es',enableShiftDragZoom:true,appletOnLoad:function(g){api=g;g.evalCommand('a=pi/6');g.evalCommand('O=(0,0)');g.evalCommand('c: x^2+y^2=1');g.evalCommand('P=(cos(a),sin(a))');g.evalCommand('C=(x(P),0)');g.evalCommand('S=(0,y(P))');g.evalCommand('Segment(O,P)');g.evalCommand('Segment(P,C)');g.evalCommand('Segment(P,S)');g.evalCommand('SetColor(P,155,28,49)');g.evalCommand('SetPointSize(P,6)');g.evalCommand('SetCoordSystem(-1.5,1.5,-1.5,1.5)');update();}};
+try{new GGBApplet(params,true).inject('ggb-element')}catch(e){document.getElementById('ggb-element').textContent='No fue posible cargar GeoGebra. Verifique la conexión a internet.'}
+document.getElementById('angle').addEventListener('input',update);document.getElementById('check').addEventListener('click',()=>document.getElementById('ans').classList.toggle('hidden'));update();
+</script>
+</body></html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATEM-Precálculo · Explorador de funciones</title>
+<style>
+:root{--vino:#9b1c31;--osc:#23262a;--gris:#f4f5f7;--borde:#d9dde3;--ok:#edf7ef;--warn:#fff8e6}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--osc);background:#fff;font-size:18px;line-height:1.35}
+header{background:var(--vino);color:#fff;padding:18px 22px} header h1{margin:0;font-size:1.35rem} header p{margin:.3rem 0 0;font-size:.92rem}
+main{max-width:1180px;margin:auto;padding:18px;display:grid;grid-template-columns:340px 1fr;gap:18px}.card{border:1px solid var(--borde);border-radius:12px;padding:16px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+h2{font-size:1.05rem;color:var(--vino);margin:.2rem 0 .8rem} label{display:block;font-weight:700;margin-top:12px} select,input[type=range],textarea,button{width:100%;font-size:1rem} select,textarea{padding:9px;border:1px solid #adb5bd;border-radius:8px} textarea{min-height:92px;resize:vertical}.sliderRow{display:grid;grid-template-columns:1fr 64px;gap:8px;align-items:center}.value{font-variant-numeric:tabular-nums;text-align:right;font-weight:700;color:var(--vino)}
+button{margin-top:12px;padding:11px 14px;border:0;border-radius:9px;background:var(--vino);color:#fff;font-weight:700;cursor:pointer}button.secondary{background:#51575e}button:focus,select:focus,textarea:focus,input:focus{outline:3px solid #f1b8c3;outline-offset:2px}
+#equation{font-size:1.25rem;font-weight:700;text-align:center;margin:4px 0 10px}.graphWrap{overflow:auto}.graph{width:100%;min-width:560px;height:auto;border:1px solid var(--borde);background:#fff;border-radius:8px}.grid{stroke:#e8eaed;stroke-width:1}.axis{stroke:#42464c;stroke-width:2}.curve{fill:none;stroke:var(--vino);stroke-width:3}.asym{stroke:#7a7f86;stroke-width:1.5;stroke-dasharray:6 6}.special{fill:var(--vino)}.tick{font-size:12px;fill:#5b6066}
+.info{background:var(--gris);padding:12px;border-radius:8px;margin-top:12px}.hidden{display:none}.analysis{background:var(--ok);border-left:5px solid #3b7d48;padding:12px;border-radius:8px;margin-top:12px}.warning{background:var(--warn);border-left:5px solid #b37b00;padding:10px;border-radius:8px;margin-top:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.small{font-size:.86rem;color:#5d636a}.checks li{margin:.35rem 0}
+footer{max-width:1180px;margin:auto;padding:0 18px 22px;color:#666;font-size:.82rem}
+@media(max-width:860px){main{grid-template-columns:1fr}.graph{min-width:500px}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>Explorador de familias de funciones · MATEM-Precálculo</h1><p>Modelo de recurso para el taller de IA generativa · predecir → explorar → verificar</p></header>
+<main>
+<section class="card" aria-label="Controles">
+<h2>1. Configure la función</h2>
+<label for="family">Familia</label>
+<select id="family">
+<option value="quad">Cuadrática: y = a(x − h)² + k</option>
+<option value="rat">Racional: y = a/(x − h) + k</option>
+<option value="rad">Radical: y = a√(x − h) + k</option>
+</select>
+<label for="a">Parámetro a</label><div class="sliderRow"><select id="a"><option>-3</option><option>-2</option><option>-1</option><option>-0.5</option><option selected>1</option><option>2</option><option>3</option></select><span id="av" class="value">1</span></div>
+<label for="h">Parámetro h</label><div class="sliderRow"><input id="h" type="range" min="-5" max="5" step="1" value="2"><span id="hv" class="value">2</span></div>
+<label for="k">Parámetro k</label><div class="sliderRow"><input id="k" type="range" min="-5" max="5" step="1" value="-3"><span id="kv" class="value">-3</span></div>
+<div class="info"><strong>Consigna:</strong> antes de ver el análisis, prediga el dominio, el rango y el efecto de <em>h</em> y <em>k</em>.</div>
+<label for="pred">Mi predicción</label><textarea id="pred" placeholder="Escriba aquí su predicción..."></textarea>
+<button id="reveal">Registrar predicción y mostrar análisis</button>
+<button id="reset" class="secondary">Nueva exploración</button>
+</section>
+<section class="card">
+<h2>2. Explore la representación</h2>
+<div id="equation"></div>
+<div class="graphWrap"><svg id="svg" class="graph" viewBox="0 0 720 520" role="img" aria-label="Gráfica cartesiana interactiva"></svg></div>
+<div class="row2">
+<div class="info"><strong>Observe:</strong><div id="question"></div></div>
+<div class="info"><strong>Valores de referencia</strong><div id="sample"></div></div>
+</div>
+<div id="analysis" class="analysis hidden"></div>
+<div id="teacher" class="warning hidden"><strong>Modo tutor - verificación rápida</strong><ul class="checks" id="tests"></ul></div>
+<button id="teacherBtn" class="secondary">Mostrar/ocultar modo tutor</button>
+</section>
+</main>
+<footer>Este recurso es un modelo original para MATEM-Precálculo 2026. La visualización se genera con SVG y JavaScript embebidos, sin depender de librerías externas. La verificación matemática y pedagógica final corresponde al tutor.</footer>
+<script>
+const S=document.getElementById('svg'), family=document.getElementById('family'), aEl=document.getElementById('a'), hEl=document.getElementById('h'), kEl=document.getElementById('k');
+const av=document.getElementById('av'),hv=document.getElementById('hv'),kv=document.getElementById('kv'),eq=document.getElementById('equation'),sample=document.getElementById('sample'),question=document.getElementById('question'),analysis=document.getElementById('analysis'),tests=document.getElementById('tests');
+const W=720,H=520,CX=W/2,CY=H/2,SCALE=24;
+function X(x){return CX+x*SCALE} function Y(y){return CY-y*SCALE}
+function fmt(n){if(Math.abs(n)<1e-10)n=0; return Number.isInteger(n)?String(n):n.toFixed(2)}
+function params(){return {f:family.value,a:parseFloat(aEl.value),h:parseFloat(hEl.value),k:parseFloat(kEl.value)}}
+function fval(x,p){if(p.f==='quad') return p.a*(x-p.h)*(x-p.h)+p.k; if(p.f==='rat'){if(Math.abs(x-p.h)<1e-8)return NaN;return p.a/(x-p.h)+p.k;} if(x<p.h)return NaN; return p.a*Math.sqrt(x-p.h)+p.k}
+function el(name,attrs={}){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));S.appendChild(e);return e}
+function text(x,y,t,cls='tick'){const e=el('text',{x,y,class:cls});e.textContent=t;return e}
+function drawAxes(){S.innerHTML='';for(let x=-14;x<=14;x++){el('line',{x1:X(x),y1:0,x2:X(x),y2:H,class:'grid'});if(x!==0&&x%2===0)text(X(x)+2,CY-5,String(x));}for(let y=-10;y<=10;y++){el('line',{x1:0,y1:Y(y),x2:W,y2:Y(y),class:'grid'});if(y!==0&&y%2===0)text(CX+5,Y(y)-3,String(y));}el('line',{x1:0,y1:CY,x2:W,y2:CY,class:'axis'});el('line',{x1:CX,y1:0,x2:CX,y2:H,class:'axis'});text(W-18,CY-7,'x');text(CX+7,15,'y');}
+function equation(p){const ah=p.h===0?'x':`(x ${p.h<0?'+':'−'} ${Math.abs(p.h)})`;const kk=p.k===0?'':` ${p.k<0?'−':'+'} ${Math.abs(p.k)}`;if(p.f==='quad')return `y = ${p.a}${ah}²${kk}`;if(p.f==='rat')return `y = ${p.a}/${ah}${kk}`;return `y = ${p.a}√${ah}${kk}`}
+function draw(){const p=params();av.textContent=fmt(p.a);hv.textContent=fmt(p.h);kv.textContent=fmt(p.k);eq.textContent=equation(p);drawAxes();
+ if(p.f==='rat'){el('line',{x1:X(p.h),y1:0,x2:X(p.h),y2:H,class:'asym'});el('line',{x1:0,y1:Y(p.k),x2:W,y2:Y(p.k),class:'asym'});}
+ let d='', pen=false, prevY=null;for(let px=0;px<=W;px+=2){const x=(px-CX)/SCALE,y=fval(x,p);const py=Y(y);const valid=Number.isFinite(y)&&py>-100&&py<H+100;if(!valid){pen=false;prevY=null;continue}if(prevY!==null&&Math.abs(py-prevY)>110){pen=false}d+=(pen?'L':'M')+px.toFixed(1)+' '+py.toFixed(1)+' ';pen=true;prevY=py;}el('path',{d,class:'curve'});
+ if(p.f==='quad'){el('circle',{cx:X(p.h),cy:Y(p.k),r:5,class:'special'});} if(p.f==='rad'){el('circle',{cx:X(p.h),cy:Y(p.k),r:5,class:'special'});} updateText(p);analysis.classList.add('hidden');}
+function updateText(p){let xs;if(p.f==='rad')xs=[p.h,p.h+1,p.h+4];else xs=[-2,0,2];sample.innerHTML=xs.map(x=>`x=${fmt(x)} → y=${Number.isFinite(fval(x,p))?fmt(fval(x,p)):'no definida'}`).join('<br>');
+ if(p.f==='quad')question.textContent='¿Qué representa el punto marcado? ¿Cómo cambia la apertura al cambiar el signo de a?';
+ if(p.f==='rat')question.textContent='Identifique las dos asíntotas antes de mostrarlas en lenguaje algebraico.';
+ if(p.f==='rad')question.textContent='¿Desde qué valor de x comienza la gráfica? ¿Qué cambia si a es negativo?';}
+function reveal(){const p=params();let html='<strong>Análisis de referencia.</strong><br>';let ts=[];
+ if(p.f==='quad'){const rng=p.a>0?`y ≥ ${fmt(p.k)}`:`y ≤ ${fmt(p.k)}`;html+=`Dominio: todos los reales. Vértice: (${fmt(p.h)}, ${fmt(p.k)}). Rango: ${rng}. El eje de simetría es x = ${fmt(p.h)}.`;ts=[`Con a=${fmt(p.a)}, la parábola abre ${p.a>0?'hacia arriba':'hacia abajo'}.`,`El vértice calculado es (${fmt(p.h)}, ${fmt(p.k)}).`,`Caso de control sugerido: a=1, h=2, k=-3 → rango y ≥ -3.`];}
+ if(p.f==='rat'){html+=`Dominio: x ≠ ${fmt(p.h)}. Rango: y ≠ ${fmt(p.k)}. Asíntota vertical: x = ${fmt(p.h)}. Asíntota horizontal: y = ${fmt(p.k)}.`;ts=[`Comprobar que la gráfica no cruza x=${fmt(p.h)}.`,`Comprobar que y se aproxima a ${fmt(p.k)} cuando |x| crece.`,`Caso de control sugerido: a=2, h=1, k=-1.`];}
+ if(p.f==='rad'){const rng=p.a>0?`y ≥ ${fmt(p.k)}`:`y ≤ ${fmt(p.k)}`;html+=`Dominio: x ≥ ${fmt(p.h)}. Punto inicial: (${fmt(p.h)}, ${fmt(p.k)}). Rango: ${rng}.`;ts=[`El radicando exige x-${fmt(p.h)} ≥ 0.`,`El punto inicial debe ser (${fmt(p.h)}, ${fmt(p.k)}).`,`Caso de control sugerido: a=1, h=4, k=0 → dominio x ≥ 4.`];}
+ analysis.innerHTML=html;analysis.classList.remove('hidden');tests.innerHTML=ts.map(x=>`<li>${x}</li>`).join('');}
+['change','input'].forEach(ev=>{family.addEventListener(ev,draw);aEl.addEventListener(ev,draw);hEl.addEventListener(ev,draw);kEl.addEventListener(ev,draw)});
+document.getElementById('reveal').addEventListener('click',reveal);document.getElementById('reset').addEventListener('click',()=>{document.getElementById('pred').value='';analysis.classList.add('hidden');});document.getElementById('teacherBtn').addEventListener('click',()=>document.getElementById('teacher').classList.toggle('hidden'));
+draw();
+</script>
+</body></html>
