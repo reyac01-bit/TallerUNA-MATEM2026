@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La función inversa como reflexión · Secuencia</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#F2F3F5;color:#1a1a1a;line-height:1.5}
+  main{max-width:760px;margin:0 auto;padding:16px}
+  header{background:#1C2B4A;color:#fff;padding:20px 16px}
+  header h1{margin:0 0 6px 0;font-size:1.5em}
+  header p{margin:0;max-width:760px}
+  section{background:#fff;border:1px solid #D9DCE1;border-radius:6px;padding:16px;margin:16px 0}
+  h2{color:#1C2B4A;font-size:1.15em;margin:0 0 8px 0}
+  .paso{color:#B3282D;font-weight:bold;font-size:.85em;text-transform:uppercase;letter-spacing:.04em}
+  input[type=text]{font-size:1em;padding:8px;border:1px solid #888;border-radius:4px;width:100%;max-width:320px;box-sizing:border-box}
+  button{font-size:1em;padding:8px 14px;margin:8px 8px 0 0;border-radius:4px;border:1px solid #1C2B4A;background:#1C2B4A;color:#fff;cursor:pointer}
+  button.sec{background:#fff;color:#1C2B4A}
+  .pista,.resp{display:none;margin-top:10px;padding:10px 12px;border-left:5px solid #1C2B4A;background:#F2F3F5}
+  .resp.ok{border-left-color:#1E7B3A}.resp.no{border-left-color:#B3282D}
+  video{width:100%;background:#000;border-radius:4px}
+  .info{display:none}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tarjeta{border:2px solid #1C2B4A;border-radius:6px;padding:10px}
+  .tarjeta b{color:#B3282D}
+  .mio{background:#FFF3CD;border:1px solid #D9DCE1;border-radius:6px;padding:10px;margin-top:10px}
+  footer{font-size:.85em;color:#444;padding:0 16px 24px;max-width:760px;margin:0 auto}
+  @media (max-width:520px){.grid{grid-template-columns:1fr}}
+  @media print{body{background:#fff}section:not(#sintesis),header p,button,footer{display:none}section{border:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>La función inversa como reflexión</h1>
+  <p>Al terminar, usted podrá reconocer la gráfica de la inversa como el reflejo de la gráfica de la función respecto de la recta y = x.</p>
+</header>
+<main>
+
+<section>
+  <div class="paso">Paso 1 · Antes del video</div>
+  <h2>Pregunta 1. Haga una predicción</h2>
+  <p>El punto (1, 3) está en la gráfica de una función f que tiene inversa. ¿Qué punto está, con seguridad, en la gráfica de la inversa de f?</p>
+  <label for="r1">Escriba el punto, por ejemplo (2, 5):</label><br>
+  <input type="text" id="r1" autocomplete="off">
+  <div><button onclick="comprobar(1)">Comprobar</button><button class="sec" onclick="pista(1)">Ver una pista</button></div>
+  <div class="pista" id="p1">La inversa deshace lo que hace f: intercambia la entrada y la salida.</div>
+  <div class="resp" id="s1"></div>
+</section>
+
+<section>
+  <div class="paso">Paso 2 · Observe</div>
+  <h2>Video: la inversa como reflexión</h2>
+  <p>Mientras lo ve, fíjese en qué les pasa a las coordenadas de cada punto cuando se refleja en la recta y = x.</p>
+  <video controls preload="metadata" src="video_inversa_reflexion.mp4">
+    Su navegador no puede mostrar el video. Abra el archivo video_inversa_reflexion.mp4 que acompaña a esta página.
+  </video>
+  <p style="font-size:.9em;color:#444">Si el video no aparece, compruebe que el archivo <code>video_inversa_reflexion.mp4</code> esté en la misma carpeta que esta página.</p>
+</section>
+
+<section>
+  <div class="paso">Paso 3 · Calcule a mano</div>
+  <h2>Pregunta 2</h2>
+  <p>Para f(x) = 2x + 1, ¿cuánto vale la inversa de f en 3? Resuélvalo en su cuaderno antes de responder.</p>
+  <label for="r2">Su respuesta (un número):</label><br>
+  <input type="text" id="r2" autocomplete="off">
+  <div><button onclick="comprobar(2)">Comprobar</button><button class="sec" onclick="pista(2)">Ver una pista</button></div>
+  <div class="pista" id="p2">Busque el valor de x que cumple 2x + 1 = 3.</div>
+  <div class="resp" id="s2"></div>
+</section>
+
+<section>
+  <div class="paso">Paso 4 · Justifique</div>
+  <h2>Pregunta 3</h2>
+  <p>¿Tiene inversa la función g(x) = x² si su dominio son todos los números reales?</p>
+  <label><input type="radio" name="r3" value="si"> Sí</label> &nbsp;
+  <label><input type="radio" name="r3" value="no"> No</label>
+  <div><button onclick="comprobar(3)">Comprobar</button><button class="sec" onclick="pista(3)">Ver una pista</button></div>
+  <div class="pista" id="p3">Calcule g(−2) y g(2) y compárelos.</div>
+  <div class="resp" id="s3"></div>
+</section>
+
+<section id="sintesis">
+  <div class="paso">Paso 5 · Síntesis</div>
+  <h2>Su infografía de cierre</h2>
+  <p id="aviso">Responda las tres preguntas (o pida verlas) y pulse el botón para generar su infografía.</p>
+  <button onclick="generar()">Generar mi infografía</button>
+  <div class="info" id="info">
+    <div class="grid">
+      <div class="tarjeta"><b>1. Intercambia</b><br>La inversa cambia la entrada por la salida: si f(a) = b, entonces la inversa lleva b a a.</div>
+      <div class="tarjeta"><b>2. Puntos</b><br>El punto (a, b) de f pasa a ser el punto (b, a) de su inversa. Ejemplo: (1, 3) pasa a (3, 1).</div>
+      <div class="tarjeta"><b>3. Reflejo</b><br>Las dos gráficas son reflejo una de la otra respecto de la recta y = x.</div>
+      <div class="tarjeta"><b>4. Condición</b><br>Solo hay inversa si la función es inyectiva. g(x) = x² no lo es en ℝ: g(−2) = g(2) = 4. Sí lo es en [0, +∞[.</div>
+    </div>
+    <div class="mio" id="mio"></div>
+    <button class="sec" onclick="window.print()">Imprimir o guardar como PDF</button>
+  </div>
+</section>
+
+</main>
+<footer>
+  <p><strong>Modelo E del curso MATEM-DOCENTES 2026 (ejemplo del equipo facilitador).</strong> Página generada con apoyo de inteligencia artificial (Claude, Anthropic, noviembre de 2026) a partir de preguntas, respuestas y pistas resueltas por el equipo; revisada antes de publicarse. No pide ni guarda datos de quien la usa.</p>
+</footer>
+<script>
+var estado={1:null,2:null,3:null};
+function limpia(t){return t.toLowerCase().replace(/\s+/g,'').replace(/;/g,',');}
+function pista(n){document.getElementById('p'+n).style.display='block';}
+var intentos={1:0,2:0,3:0};
+function muestra(n,ok,texto){
+  var d=document.getElementById('s'+n);
+  var vacio=/primero/.test(texto);
+  if(!ok && !vacio){
+    intentos[n]++;
+    if(intentos[n]===1){
+      pista(n);
+      d.className='resp no';
+      d.innerHTML='<strong>Todavía no.</strong> Lea la pista e inténtelo una vez más.';
+      d.style.display='block';
+      return;
+    }
+  }
+  d.className='resp '+(ok?'ok':'no');
+  d.innerHTML=(ok?'<strong>Correcto.</strong> ':'<strong>Revise.</strong> ')+texto;
+  d.style.display='block';
+}
+function comprobar(n){
+  if(n===1){
+    var v=document.getElementById('r1').value, t=limpia(v);
+    if(t===''){muestra(1,false,'Escriba primero su predicción; no importa si no está seguro.');return;}
+    estado[1]=v;
+    var ok=(t==='(3,1)'||t==='3,1');
+    muestra(1,ok,'El punto es (3, 1): la inversa intercambia las coordenadas de (1, 3). Véalo ahora en el video.');
+  }
+  if(n===2){
+    var v2=document.getElementById('r2').value, t2=limpia(v2).replace(',','.');
+    if(t2===''){muestra(2,false,'Escriba primero su respuesta.');return;}
+    estado[2]=v2;
+    var ok2=(parseFloat(t2)===1 && /^[+]?1(\.0+)?$/.test(t2));
+    muestra(2,ok2,'La inversa de f en 3 vale 1, porque f(1) = 2·1 + 1 = 3. En general, la inversa es (x − 1)/2.');
+  }
+  if(n===3){
+    var r=document.querySelector('input[name=r3]:checked');
+    if(!r){muestra(3,false,'Elija primero una opción.');return;}
+    estado[3]=(r.value==='si'?'Sí':'No');
+    muestra(3,r.value==='no','No tiene inversa en todos los reales: g(−2) = g(2) = 4, así que dos entradas distintas dan la misma salida. Si el dominio se restringe a [0, +∞[, la inversa es la raíz cuadrada.');
+  }
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function generar(){
+  var f=function(x){return x?esc(x):'(sin responder)';};
+  document.getElementById('mio').innerHTML='<strong>Lo que usted respondió</strong><br>'+
+    'Predicción: '+f(estado[1])+' · Correcto: (3, 1)<br>'+
+    'Inversa de f en 3: '+f(estado[2])+' · Correcto: 1<br>'+
+    '¿x² tiene inversa en ℝ?: '+f(estado[3])+' · Correcto: No';
+  document.getElementById('info').style.display='block';
+  document.getElementById('aviso').style.display='none';
+}
+</script>
+</body>
+</html>
